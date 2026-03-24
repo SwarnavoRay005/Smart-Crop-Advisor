@@ -1,0 +1,3 @@
+MODULES TO DOWNLOAD:
+
+pip install flask flask-cors numpy scikit-learn requests pandas python-dotenv
