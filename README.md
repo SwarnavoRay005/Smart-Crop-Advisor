@@ -185,7 +185,7 @@ python app.py
 ### 🌾 Prediction Result
 
 <p align="center">
-  <img src="screenshots/page2.png" width="800">
+  <img src="screenshots/page 2.png" width="800">
 </p>
 
 ---
