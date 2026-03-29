@@ -142,6 +142,10 @@ frontend/
 backend/
   model/
   app.py
+
+screenshots/
+  page1.png
+  page2.png
 ```
 
 ---
