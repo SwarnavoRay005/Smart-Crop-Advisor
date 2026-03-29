@@ -76,6 +76,10 @@ def predict():
 
         rainfall = weather.get("rain", {}).get("1h", 0)
 
+        sea_level = weather["main"].get("sea_level", "N/A")
+        wind_speed = weather["wind"].get("speed", "N/A")
+        location = weather.get("name", "Unknown")
+
         # Encode soil
         soil_encoded = soil_encoder.transform([soil_color])[0]
 
@@ -99,6 +103,9 @@ def predict():
             "temperature": temperature,
             "humidity": humidity,
             "rainfall": rainfall,
+            "sea_level": sea_level,
+            "wind_speed": wind_speed,
+            "location": location,
             "recommended_crop": crop,
             "recommended_fertilizer": fertilizer
         })

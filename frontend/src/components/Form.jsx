@@ -5,6 +5,8 @@ import {
   FaTint,
   FaCloudRain,
   FaMapMarkerAlt,
+  FaWind,
+  FaGlobeAsia,
 } from "react-icons/fa";
 
 function Form() {
@@ -19,8 +21,8 @@ function Form() {
   });
 
   const [result, setResult] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  // ================= HANDLE INPUT =================
   const handleChange = (e) => {
     setForm({
       ...form,
@@ -28,7 +30,6 @@ function Form() {
     });
   };
 
-  // ================= GET LOCATION =================
   const getLocation = () => {
     navigator.geolocation.getCurrentPosition((pos) => {
       setForm((prev) => ({
@@ -39,9 +40,9 @@ function Form() {
     });
   };
 
-  // ================= SUBMIT =================
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     try {
       const res = await predictCrop(form);
@@ -50,9 +51,10 @@ function Form() {
       console.error(err);
       alert("Prediction failed");
     }
+
+    setLoading(false);
   };
 
-  // ================= CROP IMAGES =================
   const cropImages = {
     sugarcane: "/images/sugarcane.jpg",
     jowar: "/images/jowar.jpg",
@@ -72,7 +74,6 @@ function Form() {
     grapes: "/images/grapes.jpg",
   };
 
-  // Normalize backend output safely
   const cropKey = result?.recommended_crop
     ?.toLowerCase()
     ?.trim()
@@ -81,113 +82,141 @@ function Form() {
   return (
     <div className="container">
       <div className="card">
-        <h1>🌾 Smart Crop Advisor</h1>
+        <h1>🌾 Smart Crop and Fertilizer Advisor</h1>
 
-        {/* LOCATION BUTTON */}
         <button className="locationBtn" onClick={getLocation}>
           <FaMapMarkerAlt /> Use My Location
         </button>
 
-        {/* FORM */}
         <form onSubmit={handleSubmit}>
           <div className="row">
-            <input
-              name="latitude"
-              value={form.latitude}
-              placeholder="Latitude"
-              onChange={handleChange}
-            />
-            <input
-              name="longitude"
-              value={form.longitude}
-              placeholder="Longitude"
-              onChange={handleChange}
-            />
+            <div className="rowName">
+              <label>Latitude</label>
+              <input
+                name="latitude"
+                value={form.latitude}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="rowName">
+              <label>Longitude</label>
+              <input
+                name="longitude"
+                value={form.longitude}
+                onChange={handleChange}
+              />
+            </div>
           </div>
 
           <div className="row">
-            <input name="N" placeholder="Nitrogen" onChange={handleChange} />
-            <input name="P" placeholder="Phosphorus" onChange={handleChange} />
-            <input name="K" placeholder="Potassium" onChange={handleChange} />
+            <div className="rowName">
+              <label>Nitrogen</label>
+              <input name="N" onChange={handleChange} />
+            </div>
+
+            <div className="rowName">
+              <label>Phosphorus</label>
+              <input name="P" onChange={handleChange} />
+            </div>
+
+            <div className="rowName">
+              <label>Potassium</label>
+              <input name="K" onChange={handleChange} />
+            </div>
           </div>
 
           <div className="row">
-            <input name="ph" placeholder="Soil pH" onChange={handleChange} />
+            <div className="rowName">
+              <label>Soil pH</label>
+              <input name="ph" onChange={handleChange} />
+            </div>
 
-            <select name="soil_color" onChange={handleChange}>
-              <option value="Black">Black</option>
-              <option value="Red">Red</option>
-              <option value="Medium Brown">Medium Brown</option>
-              <option value="Dark Brown">Dark Brown</option>
-              <option value="Light Brown">Light Brown</option>
-              <option value="Reddish Brown">Reddish Brown</option>
-            </select>
+            <div className="rowName">
+              <label>Soil Type</label>
+              <select name="soil_color" onChange={handleChange}>
+                <option value="Black">Black</option>
+                <option value="Red">Red</option>
+                <option value="Medium Brown">Medium Brown</option>
+                <option value="Dark Brown">Dark Brown</option>
+                <option value="Light Brown">Light Brown</option>
+                <option value="Reddish Brown">Reddish Brown</option>
+              </select>
+            </div>
           </div>
 
-          <button className="predictBtn">Predict Crop</button>
+          <button className="predictBtn">
+            {loading ? "Predicting..." : "Predict Crop"}
+          </button>
         </form>
 
-        {/* ================= RESULT DASHBOARD ================= */}
+        {/* ================= RESULT ================= */}
         {result && (
           <div className="dashboard">
-            {/* WEATHER */}
-            <h2>Weather Conditions</h2>
+            <h2>
+              Weather Conditions {result.location && `— ${result.location}`}
+            </h2>
 
             <div className="weather">
               <div className="weatherCard">
+                <FaGlobeAsia />
+                <span>Location</span>
+                <p>{result.location || "N/A"}</p>
+              </div>
+
+              <div className="weatherCard">
                 <FaTemperatureHigh />
-                <p>{result.temperature} °C</p>
+                <span>Temperature</span>
+                <p>{result.temperature ?? "--"} °C</p>
               </div>
 
               <div className="weatherCard">
                 <FaTint />
-                <p>{result.humidity}%</p>
+                <span>Humidity</span>
+                <p>{result.humidity ?? "--"}%</p>
               </div>
 
               <div className="weatherCard">
                 <FaCloudRain />
-                <p>{result.rainfall} mm</p>
+                <span>Rainfall</span>
+                <p>{result.rainfall ?? 0} mm</p>
+              </div>
+
+              <div className="weatherCard">
+                <FaWind />
+                <span>Wind Speed</span>
+                <p>{result.wind_speed ?? "--"} m/s</p>
+              </div>
+
+              <div className="weatherCard">
+                <FaGlobeAsia />
+                <span>Sea Level</span>
+                <p>{result.sea_level ?? "--"} hPa</p>
               </div>
             </div>
 
-            {/* RESULT SHOWCASE */}
+            {/* RESULT SECTION (NOW INSIDE DASHBOARD ✅) */}
             <div className="resultShowcase">
-              <h2 className="resultTitle">AI Recommendation</h2>
+              <h2 className="resultTitle">Recommended Crops and Fertilizers</h2>
 
               <div className="resultGrid">
-                {/* CROP CARD */}
                 <div className="resultCard">
                   <div className="resultLabel">🌾 Recommended Crop</div>
 
                   <img
                     src={cropImages[cropKey] || "/images/default.jpg"}
                     alt={result.recommended_crop}
-                    style={{
-                      width: "100%",
-                      borderRadius: "20px",
-                      marginBottom: "20px",
-                      boxShadow: "0 20px 50px rgba(0,0,0,0.35)",
-                      objectFit: "cover",
-                      height: "320px",
-                    }}
                   />
 
-                  <div className="resultValue">
-                    {result.recommended_crop}
-                  </div>
+                  <div className="resultValue">{result.recommended_crop}</div>
 
                   <div className="resultBadge">Optimal Yield Choice</div>
                 </div>
 
-                {/* FERTILIZER CARD */}
                 <div className="resultCard">
-                  <div className="resultLabel">
-                    🧪 Recommended Fertilizer
-                  </div>
+                  <div className="resultLabel">🧪 Recommended Fertilizer</div>
 
-                  <div style={{ fontSize: "90px", marginBottom: "12px" }}>
-                    🧪
-                  </div>
+                  <div className="resultIcon">🧪</div>
 
                   <div className="resultValue">
                     {result.recommended_fertilizer}
