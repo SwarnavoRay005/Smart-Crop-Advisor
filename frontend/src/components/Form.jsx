@@ -190,7 +190,7 @@ function Form() {
 
               <div className="weatherCard">
                 <FaGlobeAsia />
-                <span>Sea Level</span>
+                <span>Pressure</span>
                 <p>{result.sea_level ?? "--"} hPa</p>
               </div>
             </div>
